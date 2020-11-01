@@ -1,9 +1,15 @@
-import { APIGatewayProxyHandler } from 'aws-lambda';
+import {
+  APIGatewayProxyEvent,
+  APIGatewayProxyHandler,
+  APIGatewayProxyResult,
+} from 'aws-lambda';
 import 'source-map-support/register';
 import productList from '../productList.json';
 import type { Product } from '../models/product';
 
-export const handler: APIGatewayProxyHandler = async (event) => {
+export const handler: APIGatewayProxyHandler = async (
+  event: APIGatewayProxyEvent,
+): Promise<APIGatewayProxyResult> => {
   try {
     let response;
     const { productId } = event.pathParameters;

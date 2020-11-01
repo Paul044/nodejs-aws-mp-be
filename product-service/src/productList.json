@@ -54,5 +54,12 @@
     "id": "7567ec4b-b10c-45c5-9345-fc73c48a80a1",
     "price": 15,
     "title": "Julliet"
+  },
+  {
+    "count": 1,
+    "description": "Jade",
+    "id": "7567ec4b-b10c-45c5-9345-fc73c48a80a3",
+    "price": 5,
+    "title": "Jade"
   }
 ]

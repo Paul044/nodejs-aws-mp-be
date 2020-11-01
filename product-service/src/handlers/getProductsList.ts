@@ -1,10 +1,12 @@
-import { APIGatewayProxyHandler } from 'aws-lambda';
+import { APIGatewayProxyHandler, APIGatewayProxyResult } from 'aws-lambda';
 import 'source-map-support/register';
 import productList from '../productList.json';
 import type { ProductList } from '../models/product';
 import getAgeByName from '../services/agify/methods/getAgeByName';
 
-export const handler: APIGatewayProxyHandler = async () => {
+export const handler: APIGatewayProxyHandler = async (): Promise<
+  APIGatewayProxyResult
+> => {
   try {
     const productsArray: ProductList = productList;
 
