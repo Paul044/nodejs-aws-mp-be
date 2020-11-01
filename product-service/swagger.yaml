@@ -1,0 +1,65 @@
+swagger: "2.0"
+info:
+  title: Product API
+  description: Product API
+  version: 1.0.0
+host: kzsp61mtbb.execute-api.eu-west-1.amazonaws.com
+basePath: /dev
+schemes:
+  - https
+paths:
+  /products:
+    get:
+      summary: Returns a list of products.
+      description: Returns an array of products.
+      produces:
+        - application/json
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/ProductsArray'
+  /products/{productId}:
+    get:
+      summary: Returns a product by ID.
+      parameters:
+        - in: path
+          name: productId
+          required: true
+          type: string
+          minimum: 1
+          description: Id of the product
+      responses:
+        '200':
+          description: OK
+          schema:
+            $ref: '#/definitions/Product'
+        '404':
+          description: A product with the specified ID was not found.
+          schema: 
+            type: object
+            properties:
+              message: 
+                type: string
+          
+definitions:
+  Product:
+    properties:
+      count:
+        type: integer
+      description:
+        type: string
+      id:
+        type: string
+      price:
+        type: number
+      title:
+        type: string
+      
+  ProductsArray:
+    type: array
+    items:
+      $ref: '#/definitions/Product'
+    
+      
+      
