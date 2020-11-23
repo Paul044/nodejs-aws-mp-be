@@ -18,11 +18,11 @@ service: import-service
 
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
-frameworkVersion: '2'
+frameworkVersion: "2"
 
 custom:
   webpack:
-    webpackConfig: './webpack.config.js'
+    webpackConfig: "./webpack.config.js"
     includeModules: true
 
 plugins:
@@ -40,17 +40,24 @@ provider:
     # shouldStartNameWithService: true # next version api gateway naming utilized
   environment:
     AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+    SQS_QUEUE_URL:
+      Ref: catalogItemsQueue
   iamRoleStatements:
     - Effect: "Allow"
       Action:
         - "s3:ListBucket"
-      Resource: 
+      Resource:
         - "arn:aws:s3:::import-bucket-aws"
     - Effect: "Allow"
       Action:
         - "s3:*"
-      Resource: 
+      Resource:
         - "arn:aws:s3:::import-bucket-aws/*"
+    - Effect: Allow
+      Action:
+        - "sqs:*"
+      Resource: 
+        - Fn::GetAtt: [catalogItemsQueue, Arn]
 # you can overwrite defaults here
 #  stage: dev
 #  region: us-east-1
@@ -105,7 +112,6 @@ functions:
           rules:
             - prefix: uploaded/
           existing: true
-            
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
@@ -158,3 +164,16 @@ functions:
 #     NewOutput:
 #       Description: "Description for the output"
 #       Value: "Some output value"
+
+resources:
+  Resources:
+    catalogItemsQueue:
+      Type: AWS::SQS::Queue
+      Properties:
+        QueueName: catalogItemsQueue
+  Outputs:
+    catalogItemsQueueArn:
+      Value:
+        Fn::GetAtt: [catalogItemsQueue, Arn]
+      Export: 
+        Name: catalogItemsQueueArn

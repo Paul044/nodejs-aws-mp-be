@@ -2,7 +2,8 @@
   "root": true,
   "parser": "@typescript-eslint/parser", // Specifies the ESLint parser
   "parserOptions": {
-    "project": ["./tsconfig.json", "./tsconfig.test.json"]
+    "project": ["./tsconfig.json", "./tsconfig.test.json"],
+    "tsconfigRootDir": "."
   },
   "extends": [
     "airbnb-typescript/base",
