@@ -40,11 +40,24 @@ provider:
     shouldStartNameWithService: true # next version api gateway naming utilized
   environment:
     AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
+    SNS_TOPIC: 
+      Ref: createProductTopic
     PG_HOST: ${env:PG_HOST}
     PG_PORT: ${env:PG_PORT}
     PG_DATABASE: ${env:PG_DATABASE}
     PG_USERNAME: ${env:PG_USERNAME}
     PG_PASSWORD: ${env:PG_PASSWORD}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - 'sqs:*'
+      Resource:
+        - Fn::ImportValue: catalogItemsQueueArn
+    - Effect: Allow
+      Action:
+        - 'sns:*'
+      Resource:
+        Ref: createProductTopic
 # you can overwrite defaults here
 #  stage: dev
 #  region: us-east-1
@@ -105,6 +118,15 @@ functions:
           path: products
           method: post
           cors: true
+  catalogBatchProcess:
+    handler: src/handlers/catalogBatchProcess.handler
+    events:
+      - sqs:
+          batchSize: 5
+          maximumRetryAttempts: 5
+          arn:
+            Fn::ImportValue: catalogItemsQueueArn
+
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details
@@ -156,3 +178,29 @@ functions:
 #     NewOutput:
 #       Description: "Description for the output"
 #       Value: "Some output value"
+resources:
+  Resources:
+    createProductTopic:
+      Type: AWS::SNS::Topic
+      Properties:
+        TopicName: createProductTopic
+    createProductTopicSubscription:
+      Type: AWS::SNS::Subscription
+      Properties:
+        Protocol: email
+        Endpoint: paul.qnet@gmail.com
+        TopicArn: 
+          Ref: createProductTopic
+        FilterPolicy:
+          name:
+            - Pasha
+    createProductTopicSubscriptionAlt:
+      Type: AWS::SNS::Subscription
+      Properties:
+        Protocol: email
+        Endpoint: andrey.ss@gmail.com
+        TopicArn: 
+          Ref: createProductTopic
+        FilterPolicy:
+          name:
+            - Andrey

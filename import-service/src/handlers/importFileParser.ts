@@ -1,11 +1,14 @@
 import { S3Handler } from "aws-lambda";
 import "source-map-support/register";
-import { S3 } from "aws-sdk";
+import { S3, SQS } from "aws-sdk";
 import * as csv from "csv-parser";
 
 const BUCKET = "import-bucket-aws";
+const sqsQueueUrl = process.env.SQS_QUEUE_URL;
+
 export const handler: S3Handler = (event, _context) => {
   try {
+    const sqs = new SQS();
     const s3 = new S3({ region: "us-east-1" });
     console.log("importFileParser handler");
     event.Records.forEach((record) => {
@@ -17,7 +20,19 @@ export const handler: S3Handler = (event, _context) => {
         .createReadStream();
       s3Stream
         .pipe(csv())
-        .on("data", (data) => console.log(data))
+        .on("data", (data) => {
+          sqs.sendMessage({
+            MessageBody: JSON.stringify(data),
+            QueueUrl: sqsQueueUrl,
+            DelaySeconds: 0,
+          }, (error, data) => {
+            if (error) {
+              console.error('importFileParser SQS error::', error);
+            } else {
+              console.log('importFileParser SQS data::', data);
+            }
+          });
+        })
         .on("end", async () => {
           console.log(`Moving from ${BUCKET} file ${record.s3.object.key}`);
           await s3
