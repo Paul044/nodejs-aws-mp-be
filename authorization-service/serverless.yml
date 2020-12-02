@@ -11,24 +11,23 @@
 #
 # Happy Coding!
 
-service: import-service
+service: authorization-service
 # app and org for use with dashboard.serverless.com
 #app: your-app-name
 #org: your-org-name
 
 # You can pin your service to only deploy with a specific Serverless version
 # Check out our docs for more details
-frameworkVersion: "2"
+frameworkVersion: '2'
 
 custom:
   webpack:
-    webpackConfig: "./webpack.config.js"
+    webpackConfig: './webpack.config.js'
     includeModules: true
 
 plugins:
-  # - serverless-dotenv-plugin
+  - serverless-dotenv-plugin
   - serverless-webpack
-  - serverless-pseudo-parameters
 
 provider:
   name: aws
@@ -38,27 +37,9 @@ provider:
   region: eu-west-1
   apiGateway:
     minimumCompressionSize: 1024
-    # shouldStartNameWithService: true # next version api gateway naming utilized
+    shouldStartNameWithService: true # next version api gateway naming utilized
   environment:
     AWS_NODEJS_CONNECTION_REUSE_ENABLED: 1
-    SQS_QUEUE_URL:
-      Ref: catalogItemsQueue
-  iamRoleStatements:
-    - Effect: "Allow"
-      Action:
-        - "s3:ListBucket"
-      Resource:
-        - "arn:aws:s3:::import-bucket-aws"
-    - Effect: "Allow"
-      Action:
-        - "s3:*"
-      Resource:
-        - "arn:aws:s3:::import-bucket-aws/*"
-    - Effect: Allow
-      Action:
-        - "sqs:*"
-      Resource:
-        - Fn::GetAtt: [catalogItemsQueue, Arn]
 # you can overwrite defaults here
 #  stage: dev
 #  region: us-east-1
@@ -93,33 +74,11 @@ provider:
 #    - exclude-me-dir/**
 
 functions:
-  importProductsFile:
-    handler: src/handlers/importProductsFile.handler
-    events:
-      - http:
-          path: import
-          method: get
-          cors: true
-          request:
-            parameters:
-              querystrings:
-                name: true
-          authorizer:
-            name: tokenAuthorizer
-            arn: "arn:aws:lambda:#{AWS::Region}:#{AWS::AccountId}:function:authorization-service-dev-request-authorizer"
-            resultTtlInSeconds: 0
-            identitySource: method.request.header.Authorization
-            type: token
-  importFileParser:
-    handler: src/handlers/importFileParser.handler
-    events:
-      - s3:
-          bucket: import-bucket-aws
-          event: s3:ObjectCreated:*
-          rules:
-            - prefix: uploaded/
-          existing: true
+  request-authorizer:
+    handler: src/handlers/basicAuthorizer.handler
 
+
+  
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
 #    Check the event documentation for details
@@ -171,34 +130,3 @@ functions:
 #     NewOutput:
 #       Description: "Description for the output"
 #       Value: "Some output value"
-
-resources:
-  Resources:
-    GatewayResponseUnauthorized: 
-      Type: 'AWS::ApiGateway::GatewayResponse'
-      Properties: 
-        ResponseType: UNAUTHORIZED
-        RestApiId: 
-          Ref: 'ApiGatewayRestApi'
-        ResponseParameters: 
-          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
-          gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
-    GatewayResponseAccessDenied: 
-      Type: 'AWS::ApiGateway::GatewayResponse'
-      Properties: 
-        ResponseType: ACCESS_DENIED
-        RestApiId: 
-          Ref: 'ApiGatewayRestApi'
-        ResponseParameters: 
-          gatewayresponse.header.Access-Control-Allow-Origin: "'*'"
-          gatewayresponse.header.Access-Control-Allow-Headers: "'*'"
-    catalogItemsQueue:
-      Type: AWS::SQS::Queue
-      Properties:
-        QueueName: catalogItemsQueue
-  Outputs:
-    catalogItemsQueueArn:
-      Value:
-        Fn::GetAtt: [catalogItemsQueue, Arn]
-      Export:
-        Name: catalogItemsQueueArn
