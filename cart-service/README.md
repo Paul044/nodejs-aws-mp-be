@@ -71,3 +71,25 @@ Nest is an MIT-licensed open source project. It can grow thanks to the sponsors 
 - Twitter - [@nestframework](https://twitter.com/nestframework)
 
 
+Creating application version archive "app-201207_024925".
+Uploading: [##################################################] 100% Done...
+Environment details for: development
+  Application name: paul044-cart-api
+  Region: eu-west-1
+  Deployed Version: app-201207_024925
+  Environment ID: e-2kpxp2pifw
+  Platform: arn:aws:elasticbeanstalk:eu-west-1::platform/Docker running on 64bit Amazon Linux/2.16.1
+  Tier: WebServer-Standard-1.0
+  CNAME: paul044-cart-api-dev.eu-west-1.elasticbeanstalk.com
+  Updated: 2020-12-06 23:52:37.073000+00:00
+Printing Status:
+2020-12-06 23:52:36    INFO    createEnvironment is starting.
+2020-12-06 23:52:37    INFO    Using elasticbeanstalk-eu-west-1-255075924344 as Amazon S3 storage bucket for environment data.
+2020-12-06 23:53:03    INFO    Created security group named: awseb-e-2kpxp2pifw-stack-AWSEBSecurityGroup-1ARMOGYSHJE98
+2020-12-06 23:53:19    INFO    Created EIP: 54.74.246.86
+2020-12-06 23:54:23    INFO    Waiting for EC2 instances to launch. This may take a few minutes.
+2020-12-06 23:55:21    INFO    Successfully pulled node:12.19-alpine
+2020-12-06 23:57:39    INFO    Successfully built aws_beanstalk/staging-app
+2020-12-06 23:57:48    INFO    Docker container 660eee1b2996 is running aws_beanstalk/current-app.
+2020-12-06 23:58:02    INFO    Application available at paul044-cart-api-dev.eu-west-1.elasticbeanstalk.com.
+2020-12-06 23:58:03    INFO    Successfully launched environment: development
